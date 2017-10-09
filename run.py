@@ -1,0 +1,34 @@
+#./group.py -d 3_commerical -s 0
+#./group.py -d 3_commerical -s 1
+
+./plot.py -d Sun_Whole_201 -m mean
+./plot.py -d Sun_Split_Type -m mean
+./plot.py -d Hua_Whole_Light -m mean
+#./plot.py -d Sun_Four_Door_Fridge -m mean
+#./plot.py -d Sun_Double_Door_Fridge -m sum
+./plot.py -d Hua_Whole_101 -m mean
+./plot.py -d Sun_Whole_AC -m mean
+./plot.py -d Hua_Cool_Tower -m mean
+./plot.py -d Hua_Cool_Water -m mean
+./plot.py -d Wang_Bedroom_AC -m mean
+./plot.py -d Wang_Major_Bedroom_AC_1 -m mean
+./plot.py -d Wang_Dining_AC -m mean
+./plot.py -d Wang_Whole_right -m mean
+./plot.py -d Wang_Whole_left -m mean
+./plot.py -d Wang_Major_Bedroom_AC_2 -m mean
+
+./plot.py -d Sun_Whole_201 -m sum
+./plot.py -d Sun_Split_Type -m sum
+./plot.py -d Hua_Whole_Light -m sum
+#./plot.py -d Sun_Four_Door_Fridge -m sum
+#./plot.py -d Sun_Double_Door_Fridge -m sum
+./plot.py -d Hua_Whole_101 -m sum
+./plot.py -d Sun_Whole_AC -m sum
+./plot.py -d Hua_Cool_Tower -m sum
+./plot.py -d Hua_Cool_Water -m sum
+./plot.py -d Wang_Bedroom_AC -m sum
+./plot.py -d Wang_Major_Bedroom_AC_1 -m sum
+./plot.py -d Wang_Dining_AC -m sum
+./plot.py -d Wang_Whole_right -m sum
+./plot.py -d Wang_Whole_left -m sum
+./plot.py -d Wang_Major_Bedroom_AC_2 -m sum
