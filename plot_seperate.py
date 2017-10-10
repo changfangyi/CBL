@@ -26,7 +26,7 @@ WINDOW_AUG={
     }
 }
 
-# temperature approx. working: 30 C, weekend : 30 C (the lowest one)
+
 WINDOW_AUG_filter={
     'working day': {
        1:('2017-08-16','2017-08-18'),
