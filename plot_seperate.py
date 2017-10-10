@@ -29,12 +29,27 @@ WINDOW_AUG={
 # temperature approx. working: 30 C, weekend : 30 C (the lowest one)
 WINDOW_AUG_filter={
     'working day': {
-       1:('2017-08-21','2017-08-25'),
-       2:('2017-08-29','2017-08-31'),
+       1:('2017-08-16','2017-08-18'),
+       2:('2017-08-21','2017-08-25'),
+       3:('2017-08-28','2017-08-30'),
     },
 
     'weekend': {
-       1:('2017-08-26','2017-08-27'),
+       1:('2017-08-12','2017-08-13'), # Aug : 31.37 Celsius
+       2:('2017-08-19','2017-08-20'),
+       3:('2017-08-26','2017-08-27'),
+    }
+}
+
+WINDOW_SEP_filter={
+    'working day': {
+       1:('2017-09-05','2017-09-07'),
+       2:('2017-09-11','2017-09-12'),
+       3:('2017-09-20','2017-09-22'),
+    },
+
+    'weekend': {
+       1:('2017-09-23','2017-09-24'), # SEP : 31.75 Celsius
     }
 }
 # temperature approx. working: 30 C, weekend : 27 C
@@ -73,6 +88,11 @@ def main():
     Work_SEP = Hour_Index(Work_SEP)
     Weekend_SEP = Hour_Index(Weekend_SEP)
 
+    if not os.path.isdir(os.path.join('plt',TARGET)):
+        print "Creating dirs..."
+        os.makedirs(os.path.join('plt',TARGET))
+
+
     print "Ploting for the pooling data..."
     Plot_Comparison(Work_AUG, Work_SEP, METHOD+'_Comparison_Work')
     Plot_Comparison(Weekend_AUG, Weekend_SEP, METHOD+'_Comparison_Weekend')
@@ -81,13 +101,16 @@ def main():
 
     print "Ploting for the filter data..."
     Work_AUG_filter, Weekend_AUG_filter = Work_or_Weekend(df, WINDOW_AUG_filter)
+    Work_SEP_filter, Weekend_SEP_filter = Work_or_Weekend(df, WINDOW_SEP_filter)
     Work_AUG_filter = Hour_Index(Work_AUG_filter)
     Weekend_AUG_filter = Hour_Index(Weekend_AUG_filter)
+    Work_SEP_filter = Hour_Index(Work_SEP_filter)
+    Weekend_SEP_filter = Hour_Index(Weekend_SEP_filter)
 
-    Plot_Comparison(Work_AUG_filter, Work_SEP, METHOD+'_Comparison_Work_filter')
-    Plot_Comparison(Weekend_AUG_filter, Weekend_SEP, METHOD+'_Comparison_Weekend_filter')
-    Plot_diff(Work_AUG_filter, Work_SEP, METHOD+'_difference_Work_filter')
-    Plot_diff(Weekend_AUG_filter, Weekend_SEP, METHOD+'_difference_Weekend_filter')
+    Plot_Comparison(Work_AUG_filter, Work_SEP_filter, METHOD+'_Comparison_Work_filter')
+    Plot_Comparison(Weekend_AUG_filter, Weekend_SEP_filter, METHOD+'_Comparison_Weekend_filter')
+    Plot_diff(Work_AUG_filter, Work_SEP_filter, METHOD+'_difference_Work_filter')
+    Plot_diff(Weekend_AUG_filter, Weekend_SEP_filter, METHOD+'_difference_Weekend_filter')
 
 
     print "Ploting for weekly data...."
@@ -97,7 +120,7 @@ def main():
         temp = df[start:end]
         temp = Hour_Index(temp)
         Plot_Comparison(Work_AUG, temp, METHOD+'_Comparison_Work_'+str(item))
-        Plot_diff(Work_AUG,temp, METHOD+'_difference_Work_all')
+        Plot_diff(Work_AUG,temp, METHOD+'_difference_Work_'+str(item))
 
     for item, window in WINDOW_SEP['weekend'].iteritems():
         start = window[0]
@@ -105,7 +128,7 @@ def main():
         temp = df[start:end]
         temp = Hour_Index(temp)
         Plot_Comparison(Weekend_AUG, temp, METHOD+'_Comparison_Weekend_'+str(item))
-        Plot_diff(Weekend_AUG,temp, METHOD+'_difference_Work_all')
+        Plot_diff(Weekend_AUG,temp, METHOD+'_difference_Weekend_'+str(item))
 
     print '***********************************************************************\n'
     print '**************************** All Done *********************************\n'
@@ -146,11 +169,11 @@ def Work_or_Weekend(df, windows):
     Work = pd.Series()
     Weekend = pd.Series()
     for work_or_weekend, time_intervals in windows.iteritems():
-        print 'Processing '+ work_or_weekend + '...\n'
+        #print 'Processing '+ work_or_weekend + '...\n'
         for __ ,interval in time_intervals.iteritems():               
             start = interval[0]
             end = interval[-1]
-            print 'start time is '+ start+'\n', 'end time is '+ end +'\n'
+            #print 'start time is '+ start+'\n', 'end time is '+ end +'\n'
             temp=df[start:end]
             if work_or_weekend == 'working day':
                 Work = Work.append(temp)
@@ -163,7 +186,7 @@ def Work_or_Weekend(df, windows):
 def Hour_Index(Work_or_Weekend):
     toPlot = pd.DataFrame(np.zeros(24))
     if Work_or_Weekend.empty:
-        print Work_or_Weekend.empty
+        Work_or_Weekend.empty
     else:
         hour_Index =  Work_or_Weekend
         hour_Index.index = Work_or_Weekend.index.hour
@@ -185,20 +208,22 @@ def Plot(toPlot, label):
     axs.set_xticks(range(24))
     axs.set_xlabel('Hour')
     axs.set_ylabel('Average W')
-    plt.savefig(os.path.join('plt', label))
+    plt.savefig(os.path.join('plt', TARGET, label))
     plt.clf()
 
 # Plot_diff
 def Plot_diff(toPlot_Aug, toPlot_Sep, label):
     toPlot = toPlot_Aug - toPlot_Sep
+
     fig, axs = plt.subplots(1,1)
     axs.set_title(label)
     axs.plot(toPlot, 'bo-', linewidth=2.0)
+    axs.axhline(0, color='red', lw=2)
     axs.grid()
     axs.set_xticks(range(24))
     axs.set_xlabel('Hour')
     axs.set_ylabel('Average W')
-    plt.savefig(os.path.join('plt', label))
+    plt.savefig(os.path.join('plt', TARGET, label))
     plt.clf()
 
 # Plot Comparison
@@ -211,7 +236,7 @@ def Plot_Comparison(window_aug, window_sep, kind):
     plt.xticks(range(24))
     plt.xlabel('Hour')
     plt.ylabel('Average W')
-    plt.savefig(os.path.join('plt', kind + '_' +TARGET))
+    plt.savefig(os.path.join('plt', TARGET, kind))
     plt.clf() 
 
 if __name__ == '__main__':
